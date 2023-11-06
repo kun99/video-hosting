@@ -16,10 +16,10 @@ spec:
     spec:
       containers:
       - name: toktik-ub
-        image: ghcr.io/cs-muic/kun99-p2/toktik-ub
+        image: ghcr.io/kun99-p2/auth-backend/toktik-ub:latest
         volumeMounts:
-        - name: data  # name of the volume, should match the volumes section
-          mountPath: /app/data  # path where the volume will be mounted inside the container
+        - name: data
+          mountPath: /app/data
         ports:
         - containerPort: 5000
         env:

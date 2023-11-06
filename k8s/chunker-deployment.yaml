@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: chunker
-        image: ghcr.io/cs-muic/kun99-p2/toktik-chunker
+        image: ghcr.io/kun99-p2/chunker/toktik-chunker:latest
       - name: redis-server
         image: redis:latest
         ports:

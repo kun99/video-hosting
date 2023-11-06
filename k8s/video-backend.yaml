@@ -15,8 +15,8 @@ spec:
         app: toktik-vb
     spec:
       containers:
-      - name: toktik-ub
-        image: ghcr.io/cs-muic/kun99-p2/toktik-vb
+      - name: toktik-vb
+        image: ghcr.io/kun99-p2/video-backend/toktik-vb:latest
         ports:
         - containerPort: 5001
       imagePullSecrets:

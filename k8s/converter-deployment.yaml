@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: converter
-        image: ghcr.io/cs-muic/kun99-p2/toktik-converter
+        image: ghcr.io/kun99-p2/video_processing/toktik-converter:latest
       - name: redis-server
         image: redis:latest
         ports:

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: rq-manager
-        image: ghcr.io/cs-muic/kun99-p2/toktik-broker:latest
+        image: ghcr.io/kun99-p2/video-backend/toktik-broker:latest
 ---
 apiVersion: v1
 kind: Service

@@ -15,8 +15,8 @@ spec:
         app: toktik-vf
     spec:
       containers:
-      - name: toktik-uf
-        image: ghcr.io/cs-muic/kun99-p2/toktik-vf
+      - name: toktik-vf
+        image: ghcr.io/kun99-p2/videos-frontend/toktik-vf:latest
         ports:
         - containerPort: 4000
       imagePullSecrets:

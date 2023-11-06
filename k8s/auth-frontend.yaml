@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: toktik-uf
-        image: ghcr.io/cs-muic/kun99-p2/toktik-uf
+        image: ghcr.io/kun99-p2/auth-frontend/toktik-uf:latest
         ports:
         - containerPort: 3000
       imagePullSecrets:

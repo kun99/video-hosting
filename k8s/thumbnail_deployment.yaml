@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: thumbnail
-        image: ghcr.io/cs-muic/kun99-p2/toktik-thumbnail
+        image: ghcr.io/kun99-p2/thumbnail_extractor/toktik-thumbnail:latest
       - name: redis-server
         image: redis:latest
         ports:
