@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toktik-ub
+  labels:
+    app: toktik-ub
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: toktik-ub
+  template:
+    metadata:
+      labels:
+        app: toktik-ub
+    spec:
+      containers:
+      - name: toktik-ub
+        image: ghcr.io/cs-muic/kun99-p2/toktik-ub
+        volumeMounts:
+        - name: data  # name of the volume, should match the volumes section
+          mountPath: /app/data  # path where the volume will be mounted inside the container
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_ENV
+          value: "production"
+        - name: SQLALCHEMY_DATABASE_URI
+          value: "sqlite:///app/database.db"
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: volume-pvc
+      imagePullSecrets:
+      - name: toktik-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: toktik-ub
+spec:
+  selector:
+    app: toktik-ub
+  type:  ClusterIP
+  ports:
+  - name:  http
+    port:  80
+    targetPort:  5000
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: volume-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

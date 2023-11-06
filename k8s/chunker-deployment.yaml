@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chunker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: chunker
+  template:
+    metadata:
+      labels:
+        app: chunker
+    spec:
+      containers:
+      - name: chunker
+        image: ghcr.io/cs-muic/kun99-p2/toktik-chunker
+      - name: redis-server
+        image: redis:latest
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  selector:
+    app: chunker
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379

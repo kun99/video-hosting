@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toktik-pf
+  labels:
+    app: toktik-pf
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: toktik-pf
+  template:
+    metadata:
+      labels:
+        app: toktik-pf
+    spec:
+      containers:
+      - name: toktik-uf
+        image: ghcr.io/cs-muic/kun99-p2/toktik-pf
+        ports:
+        - containerPort: 4001
+      imagePullSecrets:
+      - name: toktik-secret
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: toktik-pf
+spec:
+  selector:
+    app: toktik-pf
+  type:  ClusterIP
+  ports:
+  - name:  http
+    port:  80
+    targetPort:  4001

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rq-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rq-manager
+  template:
+    metadata:
+      labels:
+        app: rq-manager
+    spec:
+      containers:
+      - name: rq-manager
+        image: ghcr.io/cs-muic/kun99-p2/toktik-broker:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rq-manager-service
+spec:
+  selector:
+    app: rq-manager
+  ports:
+    - protocol: TCP
+      port: 80 
+      targetPort: 6379
