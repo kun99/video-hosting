@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: toktik-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api/
+        pathType: ImplementationSpecific
+        backend:
+          service: 
+            name: toktik-backend
+            port:
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: toktik-frontend
+            port:
+              number: 80

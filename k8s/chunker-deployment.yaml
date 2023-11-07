@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: chunker
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: chunker
@@ -15,10 +15,10 @@ spec:
       containers:
       - name: chunker
         image: ghcr.io/kun99-p2/chunker/toktik-chunker:latest
-      - name: redis-server
-        image: redis:latest
         ports:
         - containerPort: 6379
+      imagePullSecrets:
+      - name: ghcr-secret
 ---
 apiVersion: v1
 kind: Service

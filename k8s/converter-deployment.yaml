@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: converter
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: converter
@@ -15,10 +15,10 @@ spec:
       containers:
       - name: converter
         image: ghcr.io/kun99-p2/video_processing/toktik-converter:latest
-      - name: redis-server
-        image: redis:latest
         ports:
         - containerPort: 6379
+      imagePullSecrets:
+      - name: ghcr-secret
 ---
 apiVersion: v1
 kind: Service

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: toktik-vb
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: toktik-vb
@@ -20,7 +20,7 @@ spec:
         ports:
         - containerPort: 5001
       imagePullSecrets:
-      - name: toktik-secret
+      - name: ghcr-secret
 ---
 apiVersion: v1
 kind: Service

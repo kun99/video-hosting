@@ -5,7 +5,7 @@ metadata:
   labels:
     app: toktik-ub
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: toktik-ub
@@ -32,7 +32,7 @@ spec:
         persistentVolumeClaim:
           claimName: volume-pvc
       imagePullSecrets:
-      - name: toktik-secret
+      - name: ghcr-secret
 ---
 apiVersion: v1
 kind: Service

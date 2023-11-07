@@ -15,6 +15,11 @@ spec:
       containers:
       - name: rq-manager
         image: ghcr.io/kun99-p2/video-backend/toktik-broker:latest
+        env:
+        - name: RQ_REDIS_URL
+          value: "redis://redis-service:6379/0"
+      imagePullSecrets:
+      - name: ghcr-secret
 ---
 apiVersion: v1
 kind: Service
@@ -26,4 +31,4 @@ spec:
   ports:
     - protocol: TCP
       port: 80 
-      targetPort: 6379
+      targetPort: 80
