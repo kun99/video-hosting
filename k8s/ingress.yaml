@@ -4,19 +4,27 @@ metadata:
   name: toktik-ingress
 spec:
   rules:
-  - http:
+  - host: localhost
+    http:
       paths:
-      - path: /api/
-        pathType: ImplementationSpecific
-        backend:
-          service: 
-            name: toktik-backend
-            port:
-              number: 80
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: toktik-frontend
-            port:
-              number: 80
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: toktik-uf
+              port:
+                number: 80
+        # - path: /2
+        #   pathType: ImplementationSpecific
+        #   backend:
+        #     service:
+        #       name: toktik-vf
+        #       port:
+        #         number: 80
+        # - path: /3
+        #   pathType: ImplementationSpecific
+        #   backend:
+        #     service:
+        #       name: toktik-pf
+        #       port:
+        #         number: 80

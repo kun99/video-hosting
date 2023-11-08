@@ -17,8 +17,6 @@ spec:
       containers:
       - name: toktik-uf
         image: ghcr.io/kun99-p2/auth-frontend/toktik-uf:latest
-        ports:
-        - containerPort: 3000
       imagePullSecrets:
       - name: ghcr-secret
 ---
@@ -33,4 +31,4 @@ spec:
   ports:
   - name:  http
     port:  80
-    targetPort:  3000
+    targetPort: 3000

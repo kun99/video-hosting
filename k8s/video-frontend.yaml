@@ -17,8 +17,6 @@ spec:
       containers:
       - name: toktik-vf
         image: ghcr.io/kun99-p2/videos-frontend/toktik-vf:latest
-        ports:
-        - containerPort: 4000
       imagePullSecrets:
       - name: ghcr-secret
 ---
@@ -31,6 +29,6 @@ spec:
     app: toktik-vf
   type:  ClusterIP
   ports:
-  - name:  http
-    port:  80
-    targetPort:  4000
+  - name: http
+    port: 80
+    targetPort: 4000

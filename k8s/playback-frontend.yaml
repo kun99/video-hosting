@@ -17,8 +17,6 @@ spec:
       containers:
       - name: toktik-pf
         image: ghcr.io/kun99-p2/play-video-frontend/toktik-pf:latest
-        ports:
-        - containerPort: 4001
       imagePullSecrets:
       - name: ghcr-secret
 ---
