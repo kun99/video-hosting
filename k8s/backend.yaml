@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toktik-b
+  labels:
+    app: toktik-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: toktik-b
+  template:
+    metadata:
+      labels:
+        app: toktik-b
+    spec:
+      containers:
+        - name: toktik-b
+          image: ghcr.io/kun99-p2/backend/toktik-b:latest
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          env:
+            - name: FLASK_ENV
+              value: "production"
+            - name: MYSQL_HOST
+              value: mysql-service
+            - name: MYSQL_USER
+              value: root
+            - name: MYSQL_PASSWORD
+              value: kunRoot1!
+            - name: MYSQL_DB
+              value: toktik
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: volume-pvc
+      imagePullSecrets:
+        - name: p2secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: toktik-b
+spec:
+  selector:
+    app: toktik-b
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 5000
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: volume-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

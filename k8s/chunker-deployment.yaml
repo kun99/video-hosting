@@ -25,4 +25,4 @@ spec:
         - name: QUEUE_NAME
           value: "q" 
       imagePullSecrets:
-      - name: ghcr-secret
+      - name: p2secret

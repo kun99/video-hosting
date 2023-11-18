@@ -1,0 +1,36 @@
+{
+  "name": "test-f",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.2",
+    "@fortawesome/free-brands-svg-icons": "^6.4.2",
+    "@fortawesome/free-regular-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/vue-fontawesome": "^3.0.5",
+    "axios": "^1.6.1",
+    "hls": "^0.0.1",
+    "hls.js": "^1.4.12",
+    "io": "^1.5.0",
+    "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.0",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2",
+    "video.js": "^8.6.1",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5",
+    "vue-socket.io": "^3.0.10"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "vite": "^4.4.11"
+  }
+}
