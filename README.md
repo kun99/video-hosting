@@ -1,12 +1,5 @@
 # P2-P3
 
-I have completely failed in making my project scalable and it is also unable to function as it should in a k8s cluster.
-
-to see the sad state of the project -
-```bash
-cd k8s
-kubectl apply -f . 
-```
 ## Requirements met
 Most of P2's criterias were met.
 
@@ -17,7 +10,3 @@ Most of P2's criterias were met.
 - comments, likes, views features were implemented
 - comments, likes, views are all either eventually consistent or updated in real time by utilizing both RESTful apis and websockets
 - notifications implemented but doesn't seem to be updating in real time
-
-##
-
-Ultimately failed in deploying the project in k8s in a working state.
