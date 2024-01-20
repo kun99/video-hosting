@@ -23,6 +23,9 @@ spec:
         - name: REDIS_PORT
           value: "6379"
         - name: QUEUE_NAME
-          value: "q" 
+          valueFrom:
+            secretKeyRef:
+              name: env-secret
+              key: QUEUE
       imagePullSecrets:
       - name: p2secret

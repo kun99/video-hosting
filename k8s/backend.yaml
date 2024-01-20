@@ -26,11 +26,20 @@ spec:
             - name: MYSQL_HOST
               value: mysql-service
             - name: MYSQL_USER
-              value: root
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: MYSQL_USER
             - name: MYSQL_PASSWORD
-              value: kunRoot1!
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: MYSQL_PASSWORD
             - name: MYSQL_DB
-              value: toktik
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: MYSQL_DB
       volumes:
         - name: data
           persistentVolumeClaim:

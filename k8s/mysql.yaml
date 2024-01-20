@@ -17,9 +17,15 @@ spec:
         image: mysql:latest
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: kunRoot1!
-        - name: MYSQL_DATABASE
-          value: toktik
+          valueFrom:
+            secretKeyRef:
+              name: env-secret
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DB
+          valueFrom:
+            secretKeyRef:
+              name: env-secret
+              key: MYSQL_DB
         volumeMounts:
         - name: mysql-init
           mountPath: /docker-entrypoint-initdb.d
