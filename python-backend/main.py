@@ -12,6 +12,7 @@ import re
 import tempfile
 from flask_socketio import SocketIO
 import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'test'
@@ -19,8 +20,6 @@ jwt = JWTManager(app)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://root:kunRoot1!@localhost:3306/toktik"
-#app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql://{os.environ['MYSQL_USER']}:{os.environ['MYSQL_PASSWORD']}@{os.environ['MYSQL_HOST']}/{os.environ['MYSQL_DB']}"
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqldb://{os.environ['MYSQL_USER']}:{os.environ['MYSQL_PASSWORD']}@{os.environ['MYSQL_HOST']}/{os.environ['MYSQL_DB']}?unix_socket=/run/mysqld/mysqld.sock"
 
 db = SQLAlchemy(app)
@@ -30,17 +29,20 @@ video_title = ""
 video_i = ""
 video_id = 0
 
-access_key = 'DO00JQGULATEWKWZYCHA'
-secret = '5rpGncSUAkl0BCo0E63FBy5FR3EO/daTuwxZPvOcp+8'
-endpoint = 'https://sgp1.digitaloceanspaces.com'
-bucket = 'ss-p2'
+load_dotenv()
+access_key = os.getenv("ACCESS_KEY")
+secret = os.getenv("SECRET")
+endpoint = os.getenv("ENDPOINT")
+bucket = os.getenv("BUCKET")
 session = boto3.session.Session()
+
 s3 = session.client('s3',
                         config=botocore.config.Config(s3={'addressing_style': 'virtual'}),
                         region_name='sgp1',
-                        endpoint_url='https://sgp1.digitaloceanspaces.com',
+                        endpoint_url=endpoint,
                         aws_access_key_id=access_key,
                         aws_secret_access_key=secret)
+
 #generating presigned url to save video to
 @app.route('/api/get_presigned_url', methods=['POST'])  
 def get_presigned_url():

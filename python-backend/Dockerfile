@@ -14,6 +14,6 @@ COPY requirements.txt /app/
 
 RUN pip install -r requirements.txt
 
-COPY test_backend.py message_broker.py chunker.py task.py converter.py /app/
+COPY main.py message_broker.py chunker.py thumbnail.py converter.py /app/
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "test_backend:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "main:app"]

@@ -3,16 +3,19 @@ import botocore
 import tempfile
 import os
 import subprocess
+from dotenv import load_dotenv
 
-access_key = 'DO00JQGULATEWKWZYCHA'
-secret = '5rpGncSUAkl0BCo0E63FBy5FR3EO/daTuwxZPvOcp+8'
-endpoint = 'https://sgp1.digitaloceanspaces.com'
-bucket = 'ss-p2'
+load_dotenv()
+access_key = os.getenv("ACCESS_KEY")
+secret = os.getenv("SECRET")
+endpoint = os.getenv("ENDPOINT")
+bucket = os.getenv("BUCKET")
 session = boto3.session.Session()
+
 s3 = session.client('s3',
                         config=botocore.config.Config(s3={'addressing_style': 'virtual'}),
                         region_name='sgp1',
-                        endpoint_url='https://sgp1.digitaloceanspaces.com',
+                        endpoint_url=endpoint,
                         aws_access_key_id=access_key,
                         aws_secret_access_key=secret)
 
@@ -27,7 +30,6 @@ def convert(data):
             'user': data['user'],
             'time': data['time']
         }
-        print(metadata)
         with tempfile.NamedTemporaryFile(mode='w+b', suffix=".mp4",delete=False) as temp_video:
             try:
                 s3.download_file(bucket, data['key'], temp_video.name)

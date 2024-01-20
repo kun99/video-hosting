@@ -1,23 +1,27 @@
-from task import extract_thumbnail
+from thumbnail import extract_thumbnail
 from converter import convert
 from chunker import chunker
 import boto3
 import botocore
 from redis import Redis
 from rq import Queue
+import os
+from dotenv import load_dotenv
 
 redis_conn = Redis(host='redis-service', port=6379, db=0)
 firstQueue = Queue('q', connection=redis_conn)
 
-access_key = 'DO00JQGULATEWKWZYCHA'
-secret = '5rpGncSUAkl0BCo0E63FBy5FR3EO/daTuwxZPvOcp+8'
-endpoint = 'https://sgp1.digitaloceanspaces.com'
-bucket = 'ss-p2'
+load_dotenv()
+access_key = os.getenv("ACCESS_KEY")
+secret = os.getenv("SECRET")
+endpoint = os.getenv("ENDPOINT")
+bucket = os.getenv("BUCKET")
 session = boto3.session.Session()
+
 s3 = session.client('s3',
                         config=botocore.config.Config(s3={'addressing_style': 'virtual'}),
                         region_name='sgp1',
-                        endpoint_url='https://sgp1.digitaloceanspaces.com',
+                        endpoint_url=endpoint,
                         aws_access_key_id=access_key,
                         aws_secret_access_key=secret)
 

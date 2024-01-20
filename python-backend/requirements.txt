@@ -15,3 +15,4 @@ flask_socketio
 mysqlclient
 pymysql
 mysql-connector-python
+python-dotenv
