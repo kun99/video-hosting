@@ -126,42 +126,32 @@ export default {
     async uploadVideoToS3() {
       const formData = new FormData();
       formData.append("title", this.title);
+      formData.append("desc", this.desc);
       formData.append("user", this.user);
       try {
         const response = await axios.post("/api/get_presigned_url", formData);
         const presignedUrl = response.data.url;
-        console.log(presignedUrl)
-        await axios.put(presignedUrl, this.video, {
+        console.log(presignedUrl);
+        axios.post(presignedUrl.url, presignedUrl.fields, {
           headers: {
-            "x-amz-meta-title": this.title,
-            "x-amz-meta-id": response.data.id,
-            "x-amz-meta-time": response.data.datetime,
-            "x-amz-meta-desc": this.desc,
-            "Content-Type": "video/mp4",
-            Metadata: {
-              "x-amz-meta-title": this.title,
-              "x-amz-meta-user": this.user,
-              "x-amz-meta-id": response.data.id,
-              "x-amz-meta-desc": this.desc,
-              "x-amz-meta-time": response.data.datetime,
-            },
+            "Content-Type": "multipart/form-data",
           },
+          files: this.video,
         });
         console.log("Video uploaded successfully");
-        await axios.post("/api/tasks", {
-          key: "videos/" + this.user + "/" + this.title,
-          user: this.user,
-          title: this.title,
-          desc: this.desc,
-          id: response.data.id,
-          time: response.data.datetime,
-        });
-        console.log("Thumbnail fetched");
-        await axios.post("/api/initialize", {
-          video_id: response.data.id,
-        });
-        console.log("Added to db");
-        window.location = "list";
+        // await axios.post("/api/tasks", {
+        //   key: "videos/" + this.user + "/" + this.title,
+        //   user: this.user,
+        //   title: this.title,
+        //   desc: this.desc,
+        //   id: response.data.id,
+        //   time: response.data.datetime,
+        // });
+        // console.log("Thumbnail fetched");
+        // await axios.post("/api/initialize", {
+        //   video_id: response.data.id,
+        // });
+        // console.log("Added to db");
       } catch (error) {
         console.error("Error uploading video:", error);
       }
