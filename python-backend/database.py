@@ -23,8 +23,8 @@ class Token(Base):
 
 class Video(Base):
     __tablename__='videos'
-    id = Column(Integer, primary_key=True, nullable=False)
-    user_id = Column(String(255), nullable=False)
+    id = Column(String(500), primary_key=True, nullable=False)
+    user_id = Column(Integer, nullable=False)
     title = Column(String(255), nullable=False)
 
 class Vl(Base):

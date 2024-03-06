@@ -14,7 +14,6 @@ from dotenv import load_dotenv
 from database import db_session, User, Token, Video, Vl
 
 app = Flask(__name__)
-jwt = JWTManager(app)
 CORS(app)
 bcrypt = Bcrypt()
 
@@ -49,7 +48,7 @@ def get_presigned_url():
         db_session.commit()
         return jsonify({'url': presigned_url, 'id': gen_id, 'datetime': upload_datetime})
     except Exception as e:
-        return jsonify({'error': e}), 500
+        return jsonify({'error': str(e)}), 500
 
 #redis queue
 @app.route('/api/tasks', methods=['POST'])
@@ -253,7 +252,6 @@ def user_thumbnails():
 def set_video_data():
     try:
         data = request.get_json()
-        global video_title, video_i, video_id
         video_i = data['i']
         video_id = data['id']
         video = Video.query.filter_by(id=video_id).first()

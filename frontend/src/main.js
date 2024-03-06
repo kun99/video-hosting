@@ -15,7 +15,9 @@ import 'video.js/dist/video-js.css';
 
 const app = createApp(App).component('font-awesome-icon', FontAwesomeIcon)
 
-app.use(createPinia())
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+
+app.use(createPinia().use(piniaPluginPersistedstate))
 app.use(router)
 
 app.mount('#app')

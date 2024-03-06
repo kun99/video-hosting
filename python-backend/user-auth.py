@@ -47,8 +47,6 @@ def login():
             db_session.commit()
         db_session.add(new_access)
         db_session.commit()
-        global uname
-        uname = username
         return jsonify({'success': True, 'message': 'Login successful', 'token': access_token}), 200
     else:
         return jsonify({'error': 'Invalid username or password'}), 401
@@ -57,27 +55,11 @@ def login():
 def logout():
     return jsonify({'success': True, 'message': 'Logout successful'}), 200
 
-@app.route('/auth/get_user_using_token', methods=['POST'])
-def get_user_using_token():
-    data = request.get_json()
-    if 'token' not in data:
-        return jsonify({'error': 'Need token'}), 400
-    token = data['token']
-    access = db_session.query(Token).filter(Token.token==token).first()
-    return jsonify({'success': True, 'message': 'Username retrieved', 'username': access.username}), 200
-
-@app.route('/auth/get_token', methods=['POST'])
-def get_token():
-    data = request.get_json()
-    if 'username' not in data:
-        return jsonify({'error': 'No access'}), 400
-    username = data['username']
-    access = db_session.query(Token).filter(Token.username==username).first()
-    return jsonify({'success': True, 'message': 'Token retrieved', 'token': access.token}), 200
-
-@app.route('/auth/fetch_username', methods=['GET'])
+@app.route('/auth/fetch_username', methods=['POST'])
 def fetch_username():
-    return jsonify({'success': True, 'name': uname}), 200
+    data = request.get_json()
+    access = db_session.query(Token).filter(Token.token==data['token']).first()
+    return jsonify({'success': True, 'name': access.username}), 200
 
 if __name__ == '__main__':  
    app.run(host='0.0.0.0', debug=True, port=5001)

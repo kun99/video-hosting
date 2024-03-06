@@ -92,7 +92,6 @@ export default {
             if (parseInt(a[0]["views"]) > parseInt(b[0]["views"])) return -1;
             return 0;
           });
-          console.log(this.thumbnails);
         })
         .catch((error) => {
           console.error("Error fetching views:", error);

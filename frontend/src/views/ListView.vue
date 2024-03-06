@@ -88,11 +88,14 @@ export default {
     },
   },
   mounted() {
+    const authStore = useAuthStore();
+    //fetches username using token stored in pinia
     axios
-      .get("/api/fetch_username")
+      .post("/auth/fetch_username", {
+        token: authStore.getToken(),
+      })
       .then((response) => {
         this.user = response.data.name;
-        console.log(this.user);
         axios
           .post("/api/my_thumbnails", {
             username: response.data.name,

@@ -92,7 +92,6 @@ export default {
             id: this.id,
           })
           .then((response) => {
-            console.log(response.data);
             this.desc = response.data.metadata.desc;
             this.m3u8 = response.data.m3u8;
             this.initVideo();
@@ -114,7 +113,6 @@ export default {
       .get("/api/videos")
       .then((response) => {
         this.videos = response.data.videos;
-        console.log(this.videos);
       })
       .catch((error) => {
         console.error("Couldn't fetch videos:", error);

@@ -72,18 +72,13 @@ export default {
         })
         .then((response) => {
           const auth = useAuthStore();
-          console.log(auth.getAuthenticated());
           auth.setToken(response.data.token);
-          console.log(response.data.token);
           this.$router.push("/home");
         })
         .catch((error) => {
           console.error(error);
         });
     },
-    // cancel() {
-    //   this.$router.push("/");
-    // },
   },
   components: { NavBar },
 };

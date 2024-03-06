@@ -18,7 +18,7 @@
     "hls.js": "^1.4.12",
     "io": "^1.5.0",
     "pinia": "^2.1.7",
-    "pinia-plugin-persistedstate": "^3.2.0",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "video.js": "^8.6.1",

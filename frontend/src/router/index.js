@@ -1,51 +1,87 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import NavBar from '@/components/NavBar.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "../stores/store";
+import NavBar from "@/components/NavBar.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/home',
+      path: "/home",
       component: NavBar,
-      name: 'home',
-      component: () => import('../views/HomeView.vue')
+      name: "home",
+      meta: {
+        requiresAuth: true,
+      },
+      component: () => import("../views/HomeView.vue"),
     },
     {
-      path: '/list',
+      path: "/list",
       component: NavBar,
-      name: 'list',
-      component: () => import('../views/ListView.vue')
+      name: "list",
+      meta: {
+        requiresAuth: true,
+      },
+      component: () => import("../views/ListView.vue"),
     },
     {
-      path: '/upload',
+      path: "/upload",
       component: NavBar,
-      name: 'upload',
-      component: () => import('../views/UploadView.vue')
+      name: "upload",
+      meta: {
+        requiresAuth: true,
+      },
+      component: () => import("../views/UploadView.vue"),
     },
     {
-      path: '/',
-      name: 'landing',
-      component: () => import('../views/LandingView.vue')
+      path: "/",
+      name: "landing",
+      meta: {
+        requiresGuest: true,
+      },
+      component: () => import("../views/LandingView.vue"),
     },
     {
-      path: '/login',
+      path: "/login",
       component: NavBar,
-      name: 'login',
-      component: () => import('../views/LoginView.vue')
-    }, 
-    {
-      path: '/register',
-      component: NavBar,
-      name: 'register',
-      component: () => import('../views/RegisterView.vue')
+      name: "login",
+      meta: {
+        requiresGuest: true,
+      },
+      component: () => import("../views/LoginView.vue"),
     },
     {
-      path: '/playback',
+      path: "/register",
       component: NavBar,
-      name: 'playback',
-      component: () => import('../views/PlaybackView.vue')
-    }
-  ]
-})
+      name: "register",
+      meta: {
+        requiresGuest: true,
+      },
+      component: () => import("../views/RegisterView.vue"),
+    },
+    {
+      path: "/playback",
+      component: NavBar,
+      name: "playback",
+      meta: {
+        requiresAuth: true,
+      },
+      component: () => import("../views/PlaybackView.vue"),
+    },
+  ],
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  const requiresAuth = to.matched.some((x) => x.meta.requiresAuth);
+  const requiresGuest = to.matched.some((x) => x.meta.requiresGuest);
+  const isLoggedin = authStore.getAuthenticated();
+  if (requiresAuth && !isLoggedin) {
+    next("/login");
+  } else if (requiresGuest && isLoggedin) {
+    next("/home");
+  }  else {
+    next();
+  }
+});
+
+export default router;

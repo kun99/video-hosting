@@ -66,7 +66,6 @@ export default {
   },
   computed: {
     userStore() {
-      console.log(this.store.getAuthenticated());
       return this.store;
     },
   },

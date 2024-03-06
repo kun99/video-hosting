@@ -130,6 +130,7 @@ export default {
       try {
         const response = await axios.post("/api/get_presigned_url", formData);
         const presignedUrl = response.data.url;
+        console.log(presignedUrl)
         await axios.put(presignedUrl, this.video, {
           headers: {
             "x-amz-meta-title": this.title,
@@ -168,10 +169,14 @@ export default {
   },
   created() {
     //getting username using authentication token
-    const auth = useAuthStore();
-    axios.get("/api/fetch_username").then((response) => {
-      this.user = response.data.name;
-    });
+    const authStore = useAuthStore();
+    axios
+      .post("/auth/fetch_username", {
+        token: authStore.getToken(),
+      })
+      .then((response) => {
+        this.user = response.data.name;
+      });
   },
   components: { NavBar },
 };
