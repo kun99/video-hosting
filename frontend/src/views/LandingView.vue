@@ -18,22 +18,19 @@
       </p>
     </div>
     <div class="flex flex-row justify-center">
-      <div class="flex flex-col mb-8 md:flex-row lg:justify-center">
-        ><RouterLink
+        <RouterLink
           class="text-white hover:bg-hover bg-secondary w-36 focus:ring-4 focus:ring-red-800 font-medium rounded-lg text-base px-6 py-2.5 text-center mb-3"
           to="/register"
         >
           Register?
         </RouterLink>
-      </div>
-      <div class="flex flex-col mb-8 md:flex-row lg:justify-center">
-        ><RouterLink
+        <div class="w-3"></div>
+        <RouterLink
           class="text-white hover:bg-hover bg-primary w-36 focus:ring-4 focus:ring-red-800 font-medium rounded-lg text-base px-6 py-2.5 text-center mb-3"
           to="/login"
         >
           Login
         </RouterLink>
-      </div>
     </div>
   </div>
 </template>

@@ -3,7 +3,6 @@
     class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4 border-gray-200"
   >
     <div class="flex items-center">
-      <img src="@/assets/toktik.png" class="h-8 mr-3" alt="toktik logo" />
       <span class="self-center text-2xl font-semibold whitespace-nowrap">
         <div v-if="userStore.getAuthenticated()">
           <RouterLink to="/home">

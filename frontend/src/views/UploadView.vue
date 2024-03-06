@@ -65,7 +65,7 @@
     </div>
     <div class="flex justify-center">
       <div class="flex bg-black w-6/12 justify-end mt-5">
-        <RouterLink to="/">
+        <RouterLink to="/home">
           <button class="text-white mr-2">Cancel</button>
         </RouterLink>
         <button class="text-white ml-2" @click="uploadVideo">OK</button>
