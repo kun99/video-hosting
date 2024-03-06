@@ -54,24 +54,16 @@
 
 <script>
 import axios from "axios";
-import io from "socket.io-client";
 import { useAuthStore } from "../stores/store";
 
 export default {
   data() {
     return {
-      isDropdownOpen: false,
       store: null,
-      notificationList: [],
     };
   },
   created() {
     this.store = useAuthStore();
-  },
-  mounted() {
-    this.notificationList = [];
-    this.getNotifications();
-    this.setupSocket();
   },
   computed: {
     userStore() {
@@ -80,45 +72,9 @@ export default {
     },
   },
   methods: {
-    setupSocket() {
-      this.socket = io.connect("http://localhost:5000");
-      this.socket.on("update_notifications", (notifications) => {
-        this.notificationList = notifications.notifications;
-      });
-    },
-    getNotifications() {
-      axios.get("/api/get-notifications").then((response) => {
-        console.log(response.data.notifications);
-        this.notificationList = response.data.notifications;
-      });
-    },
-    toggleDropdown() {
-      this.isDropdownOpen = !this.isDropdownOpen;
-    },
-    closeDropdown() {
-      this.isDropdownOpen = false;
-    },
-    clickedNoti(notification) {
-      console.log(`Notification clicked: ${notification.video_id}`);
-      axios
-        .post("/api/set_videod", {
-          id: notification.video_id,
-          i: 0,
-        })
-        .then((response) => {
-          this.$router.push("/playback");
-        })
-        .catch((error) => {
-          console.error(error);
-          alert("It ain't good");
-          this.$router.push("/home");
-        });
-      console.log(notification.notification_id);
-      axios.delete("/api/delete-notification/" + notification.notification_id);
-    },
     logout() {
       axios
-        .post("api/logout")
+        .post("/auth/logout")
         .then((response) => {
           this.store.clearToken();
           this.$router.push("/");

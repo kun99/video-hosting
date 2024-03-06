@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token
 from flask_bcrypt import Bcrypt
@@ -7,27 +6,17 @@ import boto3
 import botocore
 from datetime import datetime
 import hashlib
-import message_broker
+import tasks.message_broker as message_broker
 import re
 import tempfile
-from flask_socketio import SocketIO
 import os
 from dotenv import load_dotenv
+from database import db_session, User, Token, Video, Vl
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'test'
 jwt = JWTManager(app)
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173")
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqldb://{os.environ['MYSQL_USER']}:{os.environ['MYSQL_PASSWORD']}@{os.environ['MYSQL_HOST']}/{os.environ['MYSQL_DB']}?unix_socket=/run/mysqld/mysqld.sock"
-
-db = SQLAlchemy(app)
 bcrypt = Bcrypt()
-uname = ""
-video_title = ""
-video_i = ""
-video_id = 0
 
 load_dotenv()
 access_key = os.getenv("ACCESS_KEY")
@@ -48,16 +37,16 @@ s3 = session.client('s3',
 def get_presigned_url():
     try:
         #metadata values for identification and additional info
-        uname = request.form['user']
-        gen_id = hashlib.sha256((uname+request.form['title']).encode()).hexdigest()
+        username = request.form['user']
+        gen_id = hashlib.sha256((username+request.form['title']).encode()).hexdigest()
         upload_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        key = "videos/"+uname+"/"+request.form['title']
+        key = "videos/"+username+"/"+request.form['title']
         #presigned url where frontend can use to upload video to
         presigned_url = s3.generate_presigned_url(ClientMethod='put_object', Params={'Bucket': bucket,'Key': key}, ExpiresIn=900)
-        user = User.query.filter_by(username=uname).first()
+        user = db_session.query(User).filter(User.username==username).first()
         video = Video(id=gen_id, user_id=user.id, title=request.form['title'])
-        db.session.add(video)
-        db.session.commit()
+        db_session.add(video)
+        db_session.commit()
         return jsonify({'url': presigned_url, 'id': gen_id, 'datetime': upload_datetime})
     except Exception as e:
         return jsonify({'error': e}), 500
@@ -148,8 +137,8 @@ def video_chunks():
         data = request.get_json()
         #get id of owner with video id
         #get username of owner with owner id
-        owner = Vls.query.get(data['id'])
-        user = User.query.filter_by(id=owner.user_id).first()
+        owner = Vl.query.get(data['id'])
+        user = db_session.query(User).filter(User.id==owner.user_id).first()
         m3u8_key = 'videos/'+user.username+'/'+data['title']+'.m3u8'
         cached_key = 'cached/'+user.username+'/'+data['title']+'.m3u8'
         print("username is " + user.username)
@@ -258,7 +247,8 @@ def user_thumbnails():
     except Exception as e:
         print(e)
         return jsonify({'message': 'Error fetching thumbnails'}), 500 
-
+    
+#db stuff 
 @app.route('/api/set_videod', methods=['POST'])
 def set_video_data():
     try:
@@ -277,103 +267,9 @@ def video_data():
     video = Video.query.filter_by(id=video_id).first()
     return jsonify({'user': uname, 'id': video_id, 'title': video.title, 'i': video_i})
 
-#db/websocket stuff
-    
-class User(db.Model):
-    __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-
-class Tokens(db.Model):
-    __tablename__ = 'tokens'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
-    token = db.Column(db.String(500), unique=True, nullable=False)
-
-class Video(db.Model):
-    __tablename__ = 'video'
-    id = db.Column(db.String(255), primary_key=True, nullable=False)
-    user_id = db.Column(db.String(255), nullable=False)
-    title = db.Column(db.String(255), nullable=False)
-
-class Vls(db.Model):
-    __tablename__ = 'vls'
-    id = db.Column(db.String(255), primary_key=True)
-    user_id = db.Column(db.String(255), nullable=False)
-    
-@app.route('/api/register', methods=['POST'])
-def register():
-    data = request.get_json()
-    if 'username' not in data or 'password' not in data:
-        return jsonify({'error': 'Invalid request data'}), 400
-    username = data['username']
-    password = data['password']
-    if User.query.filter_by(username=username).first():
-        return jsonify({'error': 'Username already taken'}), 400
-
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    
-    new_user = User(username=username, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'success': True, 'message': 'Registration successful'}), 201
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    if 'username' not in data or 'password' not in data:
-        return jsonify({'error': 'Invalid request data'}), 400
-    username = data['username']
-    password = data['password']
-    user = User.query.filter_by(username=username).first()
-    if user and bcrypt.check_password_hash(user.password, password):
-        access_token = create_access_token(identity=user.id)
-        new_access = Tokens(username=username, token=access_token)
-        #remove entry if there is already one associated with user
-        user_authenticated = Tokens.query.filter_by(username=username).first()
-        if user_authenticated:
-            db.session.delete(user_authenticated)
-            db.session.commit()
-        db.session.add(new_access)
-        db.session.commit()
-        global uname
-        uname = username
-        return jsonify({'success': True, 'message': 'Login successful', 'token': access_token}), 200
-    else:
-        return jsonify({'error': 'Invalid username or password'}), 401
-
-@app.route('/api/logout', methods=['POST'])
-def logout():
-    global uname
-    uname = ""
-    return jsonify({'success': True, 'message': 'Logout successful'}), 200
-
-@app.route('/api/get_user_using_token', methods=['POST'])
-def get_user_using_token():
-    data = request.get_json()
-    if 'token' not in data:
-        return jsonify({'error': 'Need token'}), 400
-    token = data['token']
-    access = Tokens.query.filter_by(token=token).first()
-    return jsonify({'success': True, 'message': 'Username retrieved', 'username': access.username}), 200
-
-@app.route('/api/get_token', methods=['POST'])
-def get_token():
-    data = request.get_json()
-    if 'username' not in data:
-        return jsonify({'error': 'No access'}), 400
-    username = data['username']
-    access = Tokens.query.filter_by(username=username).first()
-    return jsonify({'success': True, 'message': 'Token retrieved', 'token': access.token}), 200
-
-@app.route('/api/fetch_username', methods=['GET'])
-def fetch_username():
-    return jsonify({'success': True, 'name': uname}), 200
-
 @app.route('/api/views/<video_id>', methods=['GET'])
 def get_vls(video_id):
-    video = Vls.query.get(video_id)
+    video = Vl.query.get(video_id)
     if video:
         return jsonify({'views': video.views, 'likes': video.likes}), 200
     else:
@@ -384,10 +280,10 @@ def create_video():
     data = request.get_json()
     video_id = data.get('video_id')
     if video_id:
-        user = User.query.filter_by(username=uname).first()
-        new_video = Vls(id=video_id, user_id=user.id)
-        db.session.add(new_video)
-        db.session.commit()
+        user = db_session.query(User).filter(User.username==username).first()
+        new_video = Vl(id=video_id, user_id=user.id)
+        db_session.add(new_video)
+        db_session.commit()
         print("created "+video_id)
         return jsonify({'message': 'Video created successfully'}), 201
     else:
@@ -395,13 +291,13 @@ def create_video():
 
 @app.route('/api/remove_views/<video_id>', methods=['DELETE'])
 def delete_video(video_id):
-    video = Vls.query.get(video_id)
+    video = Vl.query.get(video_id)
     if video:
-        db.session.delete(video)
-        db.session.commit()
+        db_session.delete(video)
+        db_session.commit()
         return jsonify({'message': 'Video deleted successfully'}), 200
     else:
         return jsonify({'error': 'Video not found'}), 404
     
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == '__main__':  
+   app.run(host='0.0.0.0', debug=True, port=5000)

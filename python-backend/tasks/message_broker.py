@@ -1,6 +1,6 @@
-from thumbnail import extract_thumbnail
-from converter import convert
-from chunker import chunker
+from tasks.thumbnail import extract_thumbnail
+from tasks.converter import convert
+from tasks.chunker import chunker
 import boto3
 import botocore
 from redis import Redis
