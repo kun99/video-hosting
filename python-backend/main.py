@@ -40,14 +40,24 @@ def get_presigned_url():
         gen_id = hashlib.sha256((username+request.form['title']).encode()).hexdigest()
         upload_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         key = "videos/"+username+"/"+request.form['title']
+        
+        # metadata = {
+        #   "x-amz-meta-title": request.form['title'],
+        #   "x-amz-meta-user": request.form['user'],
+        #   "x-amz-meta-id": gen_id,
+        #   "x-amz-meta-desc": request.form['desc'],
+        #   "x-amz-meta-time": upload_datetime,
+        # }
+        
         #presigned url where frontend can use to upload video to
-        presigned_url = s3.generate_presigned_url(ClientMethod='put_object', Params={'Bucket': bucket,'Key': key}, ExpiresIn=900)
+        presigned_url = s3.generate_presigned_post(bucket, key, ExpiresIn=900)
         user = db_session.query(User).filter(User.username==username).first()
-        video = Video(id=gen_id, user_id=user.id, title=request.form['title'])
-        db_session.add(video)
-        db_session.commit()
+        # video = Video(id=gen_id, user_id=user.id, title=request.form['title'])
+        # db_session.add(video)
+        # db_session.commit()
         return jsonify({'url': presigned_url, 'id': gen_id, 'datetime': upload_datetime})
     except Exception as e:
+        print(e)
         return jsonify({'error': str(e)}), 500
 
 #redis queue
