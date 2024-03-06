@@ -47,7 +47,6 @@
 
 <script>
 import axios from "axios";
-import io from "socket.io-client";
 import { useAuthStore } from "../stores/store";
 import NavBar from "../components/NavBar.vue";
 export default {
@@ -59,15 +58,6 @@ export default {
     };
   },
   methods: {
-    setupSocket() {
-        this.socket = io.connect("http://localhost:5000");
-        this.socket.on("update_views", (views) => {
-            this.views = views.views;
-        });
-        this.socket.on("update_likes", (views) => {
-            this.views = views.likes;
-        });
-    },
     clickedVideo(id) {
       axios
         .post("/api/set_videod", {
@@ -124,33 +114,6 @@ export default {
       .catch((error) => {
         console.error("Couldn't fetch thumbnails:", error);
       });
-    this.setupSocket();
-  },
-  created() {
-    // axios
-    //   .get("/api/fetch_username")
-    //   .then((response) => {
-    //     this.user = response.data.name;
-    //     console.log("user: ", response.data.name);
-    //     axios
-    //       .post("/api/get_token", {
-    //         username: response.data.name,
-    //       })
-    //       .then((response) => {
-    //         const auth = useAuthStore();
-    //         auth.setToken(response.data.token);
-    //       })
-    //       .catch((error) => {
-    //         console.error(error);
-    //         alert("Login again");
-    //         this.$router.push("/");
-    //       });
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     alert("Login again");
-    //     this.$router.push("/");
-    //   });
   },
   components: { NavBar },
 };

@@ -21,18 +21,6 @@
               {{ thumbnail[0].metadata.desc }}
             </p>
           </div>
-          <!-- <div class="flex justify-center w-1/12">
-            Date
-          </div>
-          <div class="flex justify-center w-1/12">
-            Views
-          </div>
-          <div class="flex justify-center w-1/12">
-            Comments
-          </div>
-          <div class="flex justify-center w-1/12">
-            Likes
-          </div> -->
           <div class="flex flex-col items-center w-1/12">
             <button
               @click="
@@ -119,32 +107,6 @@ export default {
       .catch((error) => {
         console.error("Couldn't retrieve username:", error);
       });
-  },
-  created() {
-    // axios
-    //   .get("/api/fetch_username")
-    //   .then((response) => {
-    //     this.user = response.data.name;
-    //     console.log("user: ", response.data.name);
-    //     axios
-    //       .post("/api/get_token", {
-    //         username: response.data.name,
-    //       })
-    //       .then((response) => {
-    //         const auth = useAuthStore();
-    //         auth.setToken(response.data.token);
-    //       })
-    //       .catch((error) => {
-    //         console.error(error);
-    //         alert("Login again");
-    //         this.$router.push("/");
-    //       });
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //     alert("Login again");
-    //     this.$router.push("/");
-    //   });
   },
   components: { NavBar },
 };

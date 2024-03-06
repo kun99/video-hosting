@@ -7,39 +7,17 @@
       <span class="self-center text-2xl font-semibold whitespace-nowrap">
         <div v-if="userStore.getAuthenticated()">
           <RouterLink to="/home">
-            <button class="text-white">TokTik</button>
+            <button class="text-white">streameasy</button>
           </RouterLink>
         </div>
         <div v-else>
           <RouterLink to="/">
-            <button class="text-white">TokTik</button>
+            <button class="text-white">streameasy</button>
           </RouterLink>
         </div>
       </span>
     </div>
     <div v-if="userStore.getAuthenticated()" class="flex md:order-2">
-      <div class="relative">
-        <button
-          @click="toggleDropdown"
-          class="bg-primary text-white font-bold py-2 px-4 mr-2 rounded hover:bg-red-600"
-        >
-          <font-awesome-icon icon="fas fa-bell" />
-        </button>
-
-        <div
-          v-show="isDropdownOpen"
-          @click.away="closeDropdown"
-          class="absolute mt-2 w-64 bg-white border rounded shadow-lg cursor-pointer"
-        >
-          <li
-            v-for="notification in notificationList"
-            class="p-4 list-none"
-            @click="clickedNoti(notification)"
-          >
-            {{ notification.notification }}
-          </li>
-        </div>
-      </div>
       <button
         class="text-white bg-red-500 hover:bg-hover focus:ring-4 focus:outline-none focus:ring-red-700 font-medium rounded-lg text-sm px-4 py-2 text-center mr-3"
         @click="logout"

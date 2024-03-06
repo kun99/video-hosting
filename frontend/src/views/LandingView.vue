@@ -9,12 +9,12 @@
       <h1 class="mb-4 font-extrabold text-white md:text-5xl lg:text-6xl">
         <span
           class="text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-rose-800"
-          >Not Really Scalable</span
+          >Easy</span
         >
-        Video Streaming.
+        Video Sharing.
       </h1>
       <p class="text-lg font-normal lg:text-xl text-gray-400">
-        It ain't TikTok but it plays videos.
+        It ain't much but it's easy streaming.
       </p>
     </div>
     <div class="flex flex-row justify-center">

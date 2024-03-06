@@ -66,7 +66,7 @@ export default {
             })
                 .then((response) => {
                 console.log(response.data);
-                this.$router.push("/success");
+                this.$router.push("/");
             })
                 .catch((error) => {
                 console.error(error);

@@ -40,21 +40,11 @@ const router = createRouter({
       component: () => import('../views/RegisterView.vue')
     },
     {
-      path: '/success',
-      name: 'success',
-      component: () => import('../views/SuccessView.vue')
-    },
-    {
       path: '/playback',
       component: NavBar,
       name: 'playback',
       component: () => import('../views/PlaybackView.vue')
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: () => import('../views/TestView.vue')
-    },
+    }
   ]
 })
 
