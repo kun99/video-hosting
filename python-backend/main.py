@@ -301,27 +301,6 @@ class Vls(db.Model):
     __tablename__ = 'vls'
     id = db.Column(db.String(255), primary_key=True)
     user_id = db.Column(db.String(255), nullable=False)
-    views = db.Column(db.Integer, default=0)
-    likes = db.Column(db.Integer, default=0)
-
-class Comments(db.Model):
-    __tablename__ = 'comments'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    video_id = db.Column(db.String(255), nullable=False)
-    user_id = db.Column(db.String(255), nullable=False)
-    comment = db.Column(db.String(255), nullable=False)
-    video_title = db.Column(db.String(255), nullable=False)
-    timestamp = db.Column(db.String(255), nullable=False)
-
-class Notifications(db.Model):
-    __tablename__ = 'notifications'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    video_id = db.Column(db.String(255), nullable=False)
-    user_id = db.Column(db.String(255), nullable=False)
-    notification = db.Column(db.String(255), nullable=False)
-    video_title = db.Column(db.String(255), nullable=False)
-    timestamp = db.Column(db.String(255), nullable=False)
-    isRead = db.Column(db.Boolean, nullable=False)
     
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -392,7 +371,6 @@ def get_token():
 def fetch_username():
     return jsonify({'success': True, 'name': uname}), 200
 
-#views stuff
 @app.route('/api/views/<video_id>', methods=['GET'])
 def get_vls(video_id):
     video = Vls.query.get(video_id)
@@ -418,134 +396,12 @@ def create_video():
 @app.route('/api/remove_views/<video_id>', methods=['DELETE'])
 def delete_video(video_id):
     video = Vls.query.get(video_id)
-    comment = Comments.query.get(video_id=video)
     if video:
         db.session.delete(video)
-        db.session.delete(comment)
         db.session.commit()
         return jsonify({'message': 'Video deleted successfully'}), 200
     else:
         return jsonify({'error': 'Video not found'}), 404
     
-@app.route('/api/increment/<video_id>', methods=['POST'])
-def increase_views(video_id):
-    video = Vls.query.get(video_id)
-    if video:
-        video.views += 1
-        db.session.commit()
-        socketio.emit('update_views',  {'video_id': video_id, 'views': video.views})
-        return jsonify({'views': video.views}), 200
-    else:
-        return jsonify({'error': 'Video not found'}), 404
-    
-@app.route('/api/like/<video_id>', methods=['POST'])
-def increase_likes(video_id):
-    video = Vls.query.get(video_id)
-    if video:
-        video.likes += 1
-        db.session.commit()
-        socketio.emit('update_likes',  {'video_id': video_id, 'likes': video.likes})
-        return jsonify({'likes': video.likes}), 200
-    else:
-        return jsonify({'error': 'Video not found'}), 404
-
-@app.route('/api/get-comments/<video>', methods=['GET'])
-def get_comments(video):
-    comments = Comments.query.filter_by(video_id=video).all()
-    if comments:
-        comments_data = [{'comment': comment.comment} for comment in comments]
-        return jsonify({'message': 'Comments fetched', 'comments': comments_data}), 201
-    else:
-        return jsonify({'error': 'Invalid video ID'}), 400
-
-# id = db.Column(db.Integer, primary_key=T=Falrue, autoincrement=True)
-# video_id = db.Column(db.Integer, nullable=False)
-# user_id = db.Column(db.Integer, nullable=False)
-# notification = db.Column(db.String, nullable=False)
-# timestamp = db.Column(db.String, nullablese)
-# isRead = db.Column(db.Boolean, nullable=False)
-
-@app.route('/api/add-comment', methods=['POST'])
-def add_comment():
-    data = request.get_json()
-    video = data.get('video')
-    if video:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        user = User.query.filter_by(username=uname).first()
-        new_comment = Comments(video_id=video, user_id=user.id, comment=data.get('comment'), video_title=video_title, timestamp=now)
-        db.session.add(new_comment)
-        db.session.commit()
-        #notify owner of video when there is a new comment
-        #notify all the commenters in the video
-        owner = Vls.query.filter_by(id=video).first()
-        comments = Comments.query.filter_by(video_id=video).all()
-        new_notifications = []
-        for comment in comments:
-            #if the the comment id is not the owner's id 
-            #if the comment is not by the owner
-            if owner.user_id != comment.user_id:
-                noti = new_notifications.append(add_notification(video, owner.user_id, video_title, "There is a new comment on your video!", now))
-                socketio.emit('update_notifications', {'notification': noti.notification, 'notification_id':noti.id, 'title': noti.video_title, 'video_id': noti.video_id})
-                break
-        print("CURRENTLY " + str(user.id))
-        print("OWNER IS: " + owner.user_id)
-        for comment in comments:
-            #if the comment is not by the user and is not by the owner.
-            #then they should be alerted.
-            print(comment.user_id)
-            if comment.user_id != str(user.id) and comment.user_id != owner.user_id:
-                noti = add_notification(video, comment.user_id, video_title, "There is a new comment on a video you commented on!", now)
-                socketio.emit('update_notifications', {'notification': noti.notification, 'notification_id':noti.id, 'title': noti.video_title, 'video_id': noti.video_id})
-                break
-        print("added new comment to: " + video)
-        return jsonify({'message': 'Comment added successfully'}), 201
-    else:
-        return jsonify({'error': 'Invalid video ID'}), 400
-
-def add_notification(vid, user_id, video_title, notification, now):
-    data = request.get_json()
-    vid = data.get('video')
-    if vid:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        new_notification = Notifications(video_id=vid, user_id=user_id, notification=notification, video_title=video_title, isRead=False, timestamp=now)
-        db.session.add(new_notification)
-        db.session.commit()
-        return new_notification
-    else:
-        return jsonify({'error': 'Invalid video ID'}), 400
-
-@app.route('/api/delete-notification/<id>', methods=['DELETE'])
-def delete_notification(id):
-    notification = Notifications.query.get(id)
-    print(notification)
-    if notification:
-        notification.isRead = True
-        db.session.delete(notification)
-        db.session.commit()
-        return jsonify({'message': 'Notification removed'}), 201
-    else:
-        return jsonify({'error': 'Couldnt find notification'})
-
-@app.route('/api/get-notifications', methods=['GET'])
-def get_notifications():
-    user = User.query.filter_by(username=uname).first()
-    notifications = Notifications.query.filter_by(user_id=user.id).all()
-    if notifications:
-        noti_data = [{'notification': noti.notification, 'notification_id':noti.id, 'title': noti.video_title, 'video_id': noti.video_id}for noti in notifications if not noti.isRead]
-        return jsonify({'message': 'Notifications fetched', 'notifications': noti_data}), 201
-    else:
-        return jsonify({'error': 'Invalid video ID'}), 400
-
-@socketio.on('connect')
-def handle_connect():
-    print('Client connected')
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('Client disconnected')
-    
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    #app.run(debug=True)
-    socketio.run(app)
+    app.run(debug=True)
